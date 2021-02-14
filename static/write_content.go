@@ -6,9 +6,28 @@ import (
 	"os"
 )
 
+func WriteEmpty(fout *os.File, content_type string) (err error) {
+	if content_type == "" {
+		content_type = "application/x-empty"
+	}
+
+	_, err = fmt.Fprintf(fout, `static.Content{
+	ContentType: %q,
+	Body:        []byte{},
+}`, content_type)
+
+	return
+}
+
 func WriteContent(fout *os.File, fin *os.File, content_type string) error {
 	var err error
 	var sha1 string
+
+	if fi, err := fin.Stat(); err != nil {
+		return err
+	} else if fi.Size() == 0 {
+		return WriteEmpty(fout, content_type)
+	}
 
 	if content_type == "" {
 		// content_type
