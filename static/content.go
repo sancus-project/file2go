@@ -26,7 +26,7 @@ func (o Content) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		max_age := 24 * 60 * 60
 
-		if (o.MaxAge > 0) {
+		if o.MaxAge > 0 {
 			max_age = o.MaxAge
 		}
 
