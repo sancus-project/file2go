@@ -18,7 +18,11 @@ func hashifyAppend1(fname0 string, suffix string, v *Content, m map[string]strin
 		return false
 	}
 
-	fname1 = fmt.Sprintf("%s-%s%s", fname1, v.Sha1sum[:12], suffix)
+	if len(v.Sha1sum) > 0 {
+		fname1 = fmt.Sprintf("%s-%s%s", fname1, v.Sha1sum[:12], suffix)
+	} else {
+		fname1 = fname0
+	}
 
 	return hashify(fname0, fname1, v, m, c)
 }
@@ -33,10 +37,15 @@ func hashifyAppend2(fname0 string, ref0 string, ref1 string, v *Content, m map[s
 }
 
 func hashifyAppend3(fname0 string, v *Content, m map[string]string, c map[string]*Content) bool {
+	var fname1 string
 
-	ext := path.Ext(fname0)
-	fname1 := fname0[0 : len(fname0)-len(ext)-1]
-	fname1 = fmt.Sprintf("%s-%s.%s", fname1, v.Sha1sum[:12], ext)
+	if len(v.Sha1sum) > 0 {
+		ext := path.Ext(fname0)
+		fname1 = fname0[0 : len(fname0)-len(ext)]
+		fname1 = fmt.Sprintf("%s-%s%s", fname1, v.Sha1sum[:12], ext)
+	} else {
+		fname1 = fname0
+	}
 
 	return hashify(fname0, fname1, v, m, c)
 }
@@ -44,7 +53,7 @@ func hashifyAppend3(fname0 string, v *Content, m map[string]string, c map[string
 func Hashify(files map[string]*Content) (map[string]string, map[string]*Content) {
 	m := make(map[string]string, len(files))
 	c := make(map[string]*Content, len(files))
-	q := make([]string, len(files))
+	q := make([]string, 0, len(files))
 
 	// hashify *.css and *.js directly. store others in q1
 	for k, v := range files {
