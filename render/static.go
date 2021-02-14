@@ -54,9 +54,9 @@ func (_ StaticRenderer) AddFile(fout *os.File, fname string) (varname string, er
 	var content_type string
 
 	if strings.HasSuffix(fname, ".css") {
-		content_type = "text/css"
+		content_type = "text/css; charset=utf-8"
 	} else if strings.HasSuffix(fname, ".js") {
-		content_type = "application/javascript"
+		content_type = "application/javascript; charset=utf-8"
 	}
 	err = static.WriteContent(fout, f, content_type)
 
