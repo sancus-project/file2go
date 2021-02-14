@@ -2,23 +2,22 @@ package main
 
 import (
 	"flag"
+	"log"
+
+	"github.com/amery/file2go/config"
+	"github.com/amery/file2go/render"
 )
 
-type config struct {
-	Package string
-	Output  string
-
-	omitGoGenerate bool
-	appendOutput   bool
-}
-
 func main() {
-	c := config{}
+	c := config.Render{}
 	flag.StringVar(&c.Package, "p", "", "package name")
 	flag.StringVar(&c.Output, "o", "", "output file")
-	flag.BoolVar(&c.omitGoGenerate, "G", false, "omit //go:generate")
-	flag.BoolVar(&c.appendOutput, "a", false, "append to existing file")
+	flag.StringVar(&c.Template, "T", "", "template type")
 	flag.Parse()
 
-	c.Process(flag.Args())
+	if err := c.Validate(); err != nil {
+		log.Fatal(err)
+	}
+
+	render.RenderConfig(c, flag.Args())
 }
