@@ -29,6 +29,10 @@ func (c config) renderInit(fout *os.File, names, vars []string) error {
 	t := template.Must(template.New("Init").Parse(`
 var Files map[string]static.Content
 
+func Handler(_ bool, next http.Handler) http.Handler {
+	return static.Handler(Files, next)
+}
+
 func init() {
 	Files = make(map[string]static.Content, {{len .Entries}})
 {{range .Entries}}
