@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]Content) bool {
+func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content) bool {
 	path := r.URL.Path
 
 	// standarize path
@@ -36,7 +36,7 @@ func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]Content
 	}
 }
 
-func Handler(files map[string]Content, next http.Handler) http.Handler {
+func Handler(files map[string]*Content, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !serveFiles(w, r, files) {
 			next.ServeHTTP(w, r)

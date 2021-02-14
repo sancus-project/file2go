@@ -90,16 +90,16 @@ func (_ StaticRenderer) AddInit(fout *os.File, files []string, vars []string) er
 	}
 
 	t := template.Must(template.New("Init").Parse(`
-var Files map[string]static.Content
+var Files map[string]*static.Content
 
 func Handler(_ bool, next http.Handler) http.Handler {
 	return static.Handler(Files, next)
 }
 
 func init() {
-	Files = make(map[string]static.Content, {{len .Entries}})
+	Files = make(map[string]*static.Content, {{len .Entries}})
 {{range .Entries}}
-	Files[{{printf "%q" .Filename}}] = {{.Variable}}{{end}}
+	Files[{{printf "%q" .Filename}}] = &{{.Variable}}{{end}}
 }
 `))
 	return t.Execute(fout, d)
