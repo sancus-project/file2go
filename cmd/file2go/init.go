@@ -30,7 +30,7 @@ func (c config) renderInit(fout *os.File, names, vars []string) error {
 var Files map[string]static.Content
 
 func init() {
-	Files = make(map[string]staticContent, {{len .Entries}})
+	Files = make(map[string]static.Content, {{len .Entries}})
 {{range .Entries}}
 	Files[{{printf "%q" .Filename}}] = {{.Variable}}{{end}}
 }
