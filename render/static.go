@@ -20,6 +20,8 @@ func (_ StaticRenderer) CreateOutput(fname string, pkg string, files []string) (
 	// header
 	if _, err = f.WriteString(`
 import (
+	"net/http"
+
 	"github.com/amery/file2go/static"
 )
 `); err != nil {
