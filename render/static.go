@@ -92,8 +92,32 @@ func (_ StaticRenderer) AddInit(fout *os.File, files []string, vars []string) er
 	t := template.Must(template.New("Init").Parse(`
 var Files map[string]*static.Content
 
-func Handler(_ bool, next http.Handler) http.Handler {
-	return static.Handler(Files, next)
+var hashifiedMap map[string]string
+var hashifiedFiles map[string]*static.Content
+
+func HashifiedMap(files map[string]*static.Content) map[string]string {
+	if hashifiedMap == nil {
+		hashifiedMap, hashifiedFiles = static.Hashify(files)
+	}
+	return hashifiedMap
+}
+
+func HashifiedFiles(files map[string]*static.Content) map[string]*static.Content {
+	if hashifiedFiles == nil {
+		hashifiedMap, hashifiedFiles = static.Hashify(files)
+	}
+	return hashifiedFiles
+}
+
+func Handler(hashify bool, next http.Handler) http.Handler {
+	var files map[string]*static.Content
+	if hashify {
+		files = HashifiedFiles(Files)
+	} else {
+		files = Files
+	}
+
+	return static.Handler(files, next)
 }
 
 func init() {
