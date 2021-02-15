@@ -47,7 +47,7 @@ func (r *StaticRenderer) AddContent(fname string, blob *static.Content) error {
 	var varname string
 
 	// variable
-	varname = "f_" + fname
+	varname = "f" + fname
 	for _, c := range []string{".", "/", "-", " "} {
 		varname = strings.Replace(varname, c, "_", -1)
 	}
@@ -127,7 +127,7 @@ func (r *StaticRenderer) WriteFiles(fout *os.File) error {
 		o := r.Files[fn0]
 		v := o.Content
 
-		if _, err := fmt.Fprintf(fout, "\n// %s\nvar %s = ", fn0, o.Varname); err != nil {
+		if _, err := fmt.Fprintf(fout, "\n// %s\nvar %s = ", fn0[1:], o.Varname); err != nil {
 			return err
 		}
 
