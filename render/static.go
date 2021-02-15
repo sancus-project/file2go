@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"sort"
 	"strings"
 
@@ -87,7 +88,7 @@ func (r *StaticRenderer) Hashify() (err error) {
 			log.Printf("Hashify: %q", fn0)
 		} else {
 			log.Printf("Hashify: %q -> %q", fn0, fn1)
-			redirect[fn0] = fn1
+			redirect[fn0] = path.Base(fn1)
 		}
 
 		v.Hashified = fn1
