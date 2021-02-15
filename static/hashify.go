@@ -28,7 +28,7 @@ func hashifyAppend1(fname0 string, suffix string, v *Content, m map[string]strin
 }
 
 func hashifyAppend2(fname0 string, ref0 string, ref1 string, v *Content, m map[string]string, c map[string]*Content) bool {
-	fname1 := strings.TrimSuffix(fname0, ref0)
+	fname1 := strings.TrimPrefix(fname0, ref0)
 	if fname0 == fname1 || fname1[0] != '.' {
 		return false
 	}
