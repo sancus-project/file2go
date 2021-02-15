@@ -19,5 +19,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	render.RenderConfig(c, flag.Args())
+	if err := render.RenderConfig(c, flag.Args()); err != nil {
+		log.Fatal(err)
+	}
 }
