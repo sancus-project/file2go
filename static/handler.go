@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content) bool {
+func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content, redirects map[string]string) bool {
 	path := r.URL.Path
 
 	// standarize path
@@ -13,6 +13,14 @@ func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Conten
 		return false
 	} else if path[0] != '/' {
 		path = "/" + path
+	}
+
+	if redirects != nil {
+		if fn1, ok := redirects[path]; ok {
+			http.Redirect(w, r, fn1, http.StatusTemporaryRedirect)
+			// served
+			return true;
+		}
 	}
 
 	if o, ok := files[path]; !ok {
@@ -36,9 +44,9 @@ func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Conten
 	}
 }
 
-func Handler(files map[string]*Content, next http.Handler) http.Handler {
+func Handler(files map[string]*Content, redirects map[string]string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !serveFiles(w, r, files) {
+		if !serveFiles(w, r, files, redirects) {
 			next.ServeHTTP(w, r)
 		}
 	})

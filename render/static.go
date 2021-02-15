@@ -19,14 +19,16 @@ type StaticRendererFile struct {
 }
 
 type StaticRenderer struct {
-	Files map[string]*StaticRendererFile
-	Names []string
+	Files    map[string]*StaticRendererFile
+	Redirect map[string]string
+	Names    []string
 }
 
 func (r *StaticRenderer) Render(fout *os.File, files []string) error {
 
 	// Initialise
 	r.Files = make(map[string]*StaticRendererFile, len(files))
+	r.Redirect = make(map[string]string, len(files))
 	r.Names = make([]string, 0, len(files))
 
 	// Load files
@@ -64,7 +66,7 @@ func (r *StaticRenderer) AddContent(fname string, blob *static.Content) error {
 func (r *StaticRenderer) AddFile(fname string) error {
 	// input file
 	if blob, err := static.NewContent(fname); err == nil {
-		return r.AddContent(fname, blob)
+		return r.AddContent("/" + fname, blob)
 	} else {
 		return err
 	}
@@ -72,6 +74,7 @@ func (r *StaticRenderer) AddFile(fname string) error {
 
 func (r *StaticRenderer) Hashify() (err error) {
 	files := make(map[string]*static.Content, len(r.Files))
+	redirect := make(map[string]string, len(r.Files))
 
 	for fn0, v := range r.Files {
 		files[fn0] = v.Content
@@ -84,11 +87,13 @@ func (r *StaticRenderer) Hashify() (err error) {
 			log.Printf("Hashify: %q", fn0)
 		} else {
 			log.Printf("Hashify: %q -> %q", fn0, fn1)
+			redirect[fn0] = fn1
 		}
 
 		v.Hashified = fn1
 	}
 
+	r.Redirect = redirect
 	return
 }
 
@@ -147,7 +152,7 @@ func (r *StaticRenderer) writeFilesInitTable(fout *os.File, name string) (err er
 	for _, fn0 := range r.Names {
 		o := r.Files[fn0]
 		v := o.Varname
-		_, err = fmt.Fprintf(fout, "\t%s[%q] = &%s\n", name, "/"+fn0, v)
+		_, err = fmt.Fprintf(fout, "\t%s[%q] = &%s\n", name, fn0, v)
 
 		if err != nil {
 			return
@@ -172,7 +177,26 @@ func (r *StaticRenderer) writeHashifiedInitTable(fout *os.File, name string) (er
 		v := o.Varname
 		fn1 := o.Hashified
 
-		_, err = fmt.Fprintf(fout, "\t%s[%q] = &%s\n", name, "/"+fn1, v)
+		_, err = fmt.Fprintf(fout, "\t%s[%q] = &%s\n", name, fn1, v)
+	}
+
+	return
+}
+
+func (r *StaticRenderer) writeRedirectInitTable(fout *os.File, name string) (err error) {
+	_, err = fmt.Fprintf(fout, `
+	// %s
+	%s = make(map[string]string, %v)
+`, name, name, len(r.Files))
+
+	if err != nil {
+		return
+	}
+
+	for _, fn0 := range r.Names {
+		if fn1, ok := r.Redirect[fn0]; ok {
+			_, err = fmt.Fprintf(fout, "\t%s[%q] = %q\n", name, fn0, fn1)
+		}
 	}
 
 	return
@@ -183,18 +207,20 @@ func (r *StaticRenderer) WriteEpilogue(fout *os.File) (err error) {
 	_, err = fout.WriteString(`
 var Files map[string]*static.Content
 var HashifiedFiles map[string]*static.Content
+var Redirects map[string]string
 
 func Handler(hashify bool, next http.Handler) http.Handler {
 	var files map[string]*static.Content
+	var redirects map[string]string
 	if hashify {
 		files = HashifiedFiles
+		redirects = Redirects
 	} else {
 		files = Files
 	}
 
-	return static.Handler(files, next)
+	return static.Handler(files, redirects, next)
 }
-
 
 func init() {`)
 	if err != nil {
@@ -208,6 +234,11 @@ func init() {`)
 
 	// Hashified
 	if err = r.writeHashifiedInitTable(fout, "HashifiedFiles"); err != nil {
+		return
+	}
+
+	// Redirect
+	if err = r.writeRedirectInitTable(fout, "Redirects"); err != nil {
 		return
 	}
 
