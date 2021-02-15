@@ -243,6 +243,6 @@ func init() {`)
 		return
 	}
 
-	_, err = fout.WriteString("}")
+	_, err = fout.WriteString("}\n")
 	return
 }
