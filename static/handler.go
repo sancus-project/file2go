@@ -19,7 +19,7 @@ func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Conten
 		if fn1, ok := redirects[path]; ok {
 			http.Redirect(w, r, fn1, http.StatusTemporaryRedirect)
 			// served
-			return true;
+			return true
 		}
 	}
 

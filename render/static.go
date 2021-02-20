@@ -67,7 +67,7 @@ func (r *StaticRenderer) AddContent(fname string, blob *static.Content) error {
 func (r *StaticRenderer) AddFile(fname string) error {
 	// input file
 	if blob, err := static.NewContent(fname); err == nil {
-		return r.AddContent("/" + fname, blob)
+		return r.AddContent("/"+fname, blob)
 	} else {
 		return err
 	}
