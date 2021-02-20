@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"sort"
-	"strings"
 
 	"github.com/amery/file2go/static"
 )
@@ -45,17 +44,11 @@ func (r *StaticRenderer) Render(fout *os.File, files []string) error {
 }
 
 func (r *StaticRenderer) AddContent(fname string, blob *static.Content) error {
-	var varname string
 
 	// variable
-	varname = "f" + fname
-	for _, c := range []string{".", "/", "-", " "} {
-		varname = strings.Replace(varname, c, "_", -1)
-	}
-
 	o := &StaticRendererFile{
 		Name:    fname,
-		Varname: varname,
+		Varname: Varify(fname),
 		Content: blob,
 	}
 
