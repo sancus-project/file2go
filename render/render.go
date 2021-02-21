@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/amery/file2go/render/config"
 	"github.com/amery/file2go/render/static"
 )
 
@@ -13,7 +12,7 @@ type Renderer interface {
 	Render(fout *os.File, files []string) error
 }
 
-func RenderConfig(c config.Render, files []string) (err error) {
+func (c Config) Render(files []string) (err error) {
 	var s []string
 	var fname, mode, pkg string
 	var f *os.File

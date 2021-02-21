@@ -5,11 +5,10 @@ import (
 	"log"
 
 	"github.com/amery/file2go/render"
-	"github.com/amery/file2go/render/config"
 )
 
 func main() {
-	c := config.Render{}
+	c := render.Config{}
 	flag.StringVar(&c.Package, "p", "", "package name")
 	flag.StringVar(&c.Output, "o", "", "output file")
 	flag.StringVar(&c.Template, "T", "", "template type")
@@ -19,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := render.RenderConfig(c, flag.Args()); err != nil {
+	if err := c.Render(flag.Args()); err != nil {
 		log.Fatal(err)
 	}
 }

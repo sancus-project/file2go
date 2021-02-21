@@ -1,16 +1,16 @@
-package config
+package render
 
 import (
 	"fmt"
 )
 
-type Render struct {
+type Config struct {
 	Package  string
 	Output   string
 	Template string
 }
 
-func (c *Render) Validate() error {
+func (c *Config) Validate() error {
 
 	switch c.Template {
 	case "static", "none", "":
