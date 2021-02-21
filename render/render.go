@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/amery/file2go/config"
+	"github.com/amery/file2go/render/config"
 )
 
 type Renderer interface {

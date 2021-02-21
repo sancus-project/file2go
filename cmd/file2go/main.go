@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/amery/file2go/config"
 	"github.com/amery/file2go/render"
+	"github.com/amery/file2go/render/config"
 )
 
 func main() {
