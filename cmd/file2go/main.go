@@ -14,10 +14,6 @@ func main() {
 	flag.StringVar(&c.Template, "T", "", "template type")
 	flag.Parse()
 
-	if err := c.Validate(); err != nil {
-		log.Fatal(err)
-	}
-
 	if err := c.Render(flag.Args()); err != nil {
 		log.Fatal(err)
 	}

@@ -21,9 +21,16 @@ func (c Config) Render(files []string) (err error) {
 	// turn config.Render into variables
 	fname = c.Output
 	pkg = c.Package
+
+	if len(pkg) == 0 {
+		return fmt.Errorf("Package name missing")
+	}
+
 	switch c.Template {
-	default:
+	case "static", "none", "":
 		r = &static.StaticRenderer{}
+	default:
+		return fmt.Errorf("Invalid Template mode %q", c.Template)
 	}
 
 	// Create output
