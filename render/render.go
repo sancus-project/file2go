@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/amery/file2go/render/config"
+	"github.com/amery/file2go/render/static"
 )
 
 type Renderer interface {
@@ -23,7 +24,7 @@ func RenderConfig(c config.Render, files []string) (err error) {
 	pkg = c.Package
 	switch c.Template {
 	default:
-		r = &StaticRenderer{}
+		r = &static.StaticRenderer{}
 	}
 
 	// Create output

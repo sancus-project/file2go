@@ -1,4 +1,4 @@
-package render
+package static
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"path"
 	"sort"
 
+	"github.com/amery/file2go/file"
 	"github.com/amery/file2go/static"
 )
 
@@ -48,7 +49,7 @@ func (r *StaticRenderer) AddContent(fname string, blob *static.Content) error {
 	// variable
 	o := &StaticRendererFile{
 		Name:    fname,
-		Varname: Varify(fname),
+		Varname: file.Varify(fname),
 		Content: blob,
 	}
 
