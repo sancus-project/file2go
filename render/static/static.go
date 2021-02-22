@@ -3,7 +3,6 @@ package static
 import (
 	"fmt"
 	"os"
-	"sort"
 
 	"github.com/amery/file2go/file"
 )
@@ -34,7 +33,6 @@ func NewStaticRenderer(files []string) (*StaticRenderer, error) {
 
 func (r *StaticRenderer) Render(fout *os.File) error {
 	r.Hashify()
-	sort.Strings(r.Names)
 	return r.Write(fout)
 }
 
