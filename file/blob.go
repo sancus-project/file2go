@@ -1,10 +1,6 @@
-package static
+package file
 
 import (
-	"bytes"
-	"compress/gzip"
-	"crypto/sha1"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -13,7 +9,13 @@ import (
 
 const BLOCK_SIZE = 4096
 
-func NewContent(fname string) (o *Content, err error) {
+type Blob struct {
+	Body        []byte
+	ContentType string
+	Encoding    string
+}
+
+func (o *Blob) Load(fname string, e Encoder) (err error) {
 	var fin *os.File
 	var fi os.FileInfo
 	var content_type string
@@ -26,7 +28,7 @@ func NewContent(fname string) (o *Content, err error) {
 
 	// content_type
 	if fi, err = fin.Stat(); err != nil {
-		return nil, err
+		return err
 	} else if fi.Size() == 0 {
 		content_type = "application/x-empty"
 	} else if strings.HasSuffix(fname, ".js") {
@@ -37,7 +39,7 @@ func NewContent(fname string) (o *Content, err error) {
 		b := make([]byte, 512)
 
 		if n, err := fin.Read(b); err != nil {
-			return nil, err
+			return err
 		} else {
 			fin.Seek(0, 0)
 			content_type = http.DetectContentType(b[:n])
@@ -45,30 +47,13 @@ func NewContent(fname string) (o *Content, err error) {
 	}
 
 	// New
-	o = &Content{
-		ContentType: content_type,
-	}
+	o.ContentType = content_type
 
-	if err = o.Load(fin); err != nil {
-		return nil, err
-	}
-
-	return o, err
-}
-
-func (o *Content) Load(fin *os.File) error {
-	var buf bytes.Buffer
-
-	h := sha1.New()
-
-	// compressor
-	z, err := gzip.NewWriterLevel(&buf, gzip.BestCompression)
-	if err != nil {
+	if err = e.Reset(); err != nil {
 		return err
 	}
-	defer z.Close()
 
-	// read, compress and hash
+	// read and encode
 	b := make([]byte, BLOCK_SIZE)
 	for {
 		var n int
@@ -80,14 +65,12 @@ func (o *Content) Load(fin *os.File) error {
 			}
 			return err
 		}
-		z.Write(b[:n])
-		h.Write(b[:n])
+		e.Write(b[:n])
 	}
-	z.Flush()
-	z.Close()
+	e.Close()
 
-	// data
-	o.Body = buf.Bytes()
-	o.Sha1sum = fmt.Sprintf("%x", h.Sum(nil))
+	o.Body = e.Bytes()
+	o.Encoding = e.Encoding()
+
 	return nil
 }

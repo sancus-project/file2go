@@ -3,9 +3,19 @@ package static
 import (
 	"fmt"
 	"os"
+
+	"github.com/amery/file2go/file"
 )
 
-func (v *Content) Render(fout *os.File, indent string, columns uint) (err error) {
+// file.File
+type StaticRendererFile struct {
+	file.File
+
+	Hashified string
+	Sha1sum   string
+}
+
+func (v *StaticRendererFile) Render(fout *os.File, indent string, columns uint) (err error) {
 	// Prologue
 	_, err = fout.WriteString("static.Content{\n")
 	if err != nil {

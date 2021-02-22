@@ -2,22 +2,11 @@ package static
 
 import (
 	"fmt"
-	"log"
 	"os"
-	"path"
 	"sort"
 
 	"github.com/amery/file2go/file"
-	"github.com/amery/file2go/static"
 )
-
-type StaticRendererFile struct {
-	Name      string
-	Hashified string
-	Varname   string
-
-	Content *static.Content
-}
 
 type StaticRenderer struct {
 	Files    map[string]*StaticRendererFile
@@ -25,7 +14,8 @@ type StaticRenderer struct {
 	Names    []string
 }
 
-func (r *StaticRenderer) Render(fout *os.File, files []string) error {
+func NewStaticRenderer(files []string) (*StaticRenderer, error) {
+	r := &StaticRenderer{}
 
 	// Initialise
 	r.Files = make(map[string]*StaticRendererFile, len(files))
@@ -35,63 +25,41 @@ func (r *StaticRenderer) Render(fout *os.File, files []string) error {
 	// Load files
 	for _, fn := range files {
 		if err := r.AddFile(fn); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
+	return r, nil
+}
+
+func (r *StaticRenderer) Render(fout *os.File) error {
 	r.Hashify()
 	sort.Strings(r.Names)
 	return r.Write(fout)
 }
 
-func (r *StaticRenderer) AddContent(fname string, blob *static.Content) error {
-
-	// variable
-	o := &StaticRendererFile{
-		Name:    fname,
-		Varname: file.Varify(fname),
-		Content: blob,
-	}
-
-	r.Files[fname] = o
-	r.Names = append(r.Names, fname)
-	return nil
-}
-
+// AddFile
 func (r *StaticRenderer) AddFile(fname string) error {
+	encoder := &StaticRenderEncoder{}
+	o := &StaticRendererFile{}
+
 	// input file
-	if blob, err := static.NewContent(fname); err == nil {
-		return r.AddContent("/"+fname, blob)
-	} else {
+	if err := o.Load(fname, encoder); err != nil {
 		return err
+	} else {
+		fname = "/" + fname
+
+		o.Name = fname
+		o.Varname = file.Varify(fname)
+		o.Sha1sum = encoder.Sha1sum()
+
+		r.Files[fname] = o
+		r.Names = append(r.Names, fname)
+		return nil
 	}
 }
 
-func (r *StaticRenderer) Hashify() (err error) {
-	files := make(map[string]*static.Content, len(r.Files))
-	redirect := make(map[string]string, len(r.Files))
-
-	for fn0, v := range r.Files {
-		files[fn0] = v.Content
-	}
-
-	m, _ := static.Hashify(files)
-	for fn0, v := range r.Files {
-		fn1 := m[fn0]
-		if fn1 == fn0 {
-			log.Printf("Hashify: %q", fn0)
-		} else {
-			log.Printf("Hashify: %q -> %q", fn0, fn1)
-			redirect[fn0] = path.Base(fn1)
-		}
-
-		v.Hashified = fn1
-	}
-
-	r.Redirect = redirect
-	return
-}
-
+// Write
 func (r *StaticRenderer) Write(fout *os.File) error {
 	if err := r.WritePrologue(fout); err != nil {
 		return err
@@ -119,10 +87,9 @@ import (
 
 func (r *StaticRenderer) WriteFiles(fout *os.File) error {
 	for _, fn0 := range r.Names {
-		o := r.Files[fn0]
-		v := o.Content
+		v := r.Files[fn0]
 
-		if _, err := fmt.Fprintf(fout, "\n// %s\nvar %s = ", fn0[1:], o.Varname); err != nil {
+		if _, err := fmt.Fprintf(fout, "\n// %s\nvar %s = ", fn0[1:], v.Varname); err != nil {
 			return err
 		}
 

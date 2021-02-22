@@ -9,7 +9,8 @@ import (
 )
 
 type Renderer interface {
-	Render(fout *os.File, files []string) error
+	Render(fout *os.File) error
+	AddFile(fname string) error
 }
 
 func (c Config) Render(files []string) (err error) {
@@ -28,7 +29,7 @@ func (c Config) Render(files []string) (err error) {
 
 	switch c.Template {
 	case "static", "none", "":
-		r = &static.StaticRenderer{}
+		r, err = static.NewStaticRenderer(files)
 	default:
 		return fmt.Errorf("Invalid Template mode %q", c.Template)
 	}
@@ -64,5 +65,5 @@ func (c Config) Render(files []string) (err error) {
 		return
 	}
 
-	return r.Render(f, files)
+	return r.Render(f)
 }
