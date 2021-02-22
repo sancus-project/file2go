@@ -3,13 +3,10 @@ package static
 import (
 	"fmt"
 	"os"
-
-	"github.com/amery/file2go/file"
 )
 
 type StaticRenderer struct {
 	Files    map[string]*StaticRendererFile
-	Redirect map[string]string
 	Names    []string
 }
 
@@ -18,7 +15,6 @@ func NewStaticRenderer(files []string) (*StaticRenderer, error) {
 
 	// Initialise
 	r.Files = make(map[string]*StaticRendererFile, len(files))
-	r.Redirect = make(map[string]string, len(files))
 	r.Names = make([]string, 0, len(files))
 
 	// Load files
@@ -48,7 +44,6 @@ func (r *StaticRenderer) AddFile(fname string) error {
 		fname = "/" + fname
 
 		o.Name = fname
-		o.Varname = file.Varify(fname)
 		o.Sha1sum = encoder.Sha1sum()
 
 		r.Files[fname] = o
@@ -87,7 +82,7 @@ func (r *StaticRenderer) WriteFiles(fout *os.File) error {
 	for _, fn0 := range r.Names {
 		v := r.Files[fn0]
 
-		if _, err := fmt.Fprintf(fout, "\n// %s\nvar %s = ", fn0[1:], v.Varname); err != nil {
+		if _, err := fmt.Fprintf(fout, "\n// %s\nvar %s = ", fn0[1:], v.Varname()); err != nil {
 			return err
 		}
 
@@ -99,109 +94,33 @@ func (r *StaticRenderer) WriteFiles(fout *os.File) error {
 	return nil
 }
 
-func (r *StaticRenderer) writeFilesInitTable(fout *os.File, name string) (err error) {
-	_, err = fmt.Fprintf(fout, `
-	// %s
-	%s = make(map[string]*static.Content, %v)
-`, name, name, len(r.Files))
-
-	if err != nil {
-		return
-	}
-
-	for _, fn0 := range r.Names {
-		o := r.Files[fn0]
-		v := o.Varname
-		_, err = fmt.Fprintf(fout, "\t%s[%q] = &%s\n", name, fn0, v)
-
-		if err != nil {
-			return
-		}
-	}
-
-	return
-}
-
-func (r *StaticRenderer) writeHashifiedInitTable(fout *os.File, name string) (err error) {
-	_, err = fmt.Fprintf(fout, `
-	// %s
-	%s = make(map[string]*static.Content, %v)
-`, name, name, len(r.Files))
-
-	if err != nil {
-		return
-	}
-
-	for _, fn0 := range r.Names {
-		o := r.Files[fn0]
-		v := o.Varname
-		fn1 := o.Hashified
-
-		_, err = fmt.Fprintf(fout, "\t%s[%q] = &%s\n", name, fn1, v)
-	}
-
-	return
-}
-
-func (r *StaticRenderer) writeRedirectInitTable(fout *os.File, name string) (err error) {
-	_, err = fmt.Fprintf(fout, `
-	// %s
-	%s = make(map[string]string, %v)
-`, name, name, len(r.Files))
-
-	if err != nil {
-		return
-	}
-
-	for _, fn0 := range r.Names {
-		if fn1, ok := r.Redirect[fn0]; ok {
-			_, err = fmt.Fprintf(fout, "\t%s[%q] = %q\n", name, fn0, fn1)
-		}
-	}
-
-	return
-}
-
 func (r *StaticRenderer) WriteEpilogue(fout *os.File) (err error) {
 
-	_, err = fout.WriteString(`
-var Files map[string]*static.Content
-var HashifiedFiles map[string]*static.Content
-var Redirects map[string]string
+	_, err = fout.WriteString("\nvar Files = static.NewCollection(\n")
+	if err != nil {
+		return err
+	}
+
+	for _, fn0 := range r.Names {
+		v := r.Files[fn0]
+		fn1 := v.Hashified
+
+		_, err = fmt.Fprintf(fout, "\tstatic.NewEntry(%q, %q, &%s),\n",
+			fn0, fn1, v.Varname())
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = fout.WriteString(`)
 
 func Handler(hashify bool, next http.Handler) http.Handler {
-	var files map[string]*static.Content
-	var redirects map[string]string
-	if hashify {
-		files = HashifiedFiles
-		redirects = Redirects
-	} else {
-		files = Files
-	}
-
-	return static.Handler(files, redirects, next)
+	return Files.Handler(hashify, next)
 }
-
-func init() {`)
+`)
 	if err != nil {
-		return
+		return err
 	}
 
-	// Files
-	if err = r.writeFilesInitTable(fout, "Files"); err != nil {
-		return
-	}
-
-	// Hashified
-	if err = r.writeHashifiedInitTable(fout, "HashifiedFiles"); err != nil {
-		return
-	}
-
-	// Redirect
-	if err = r.writeRedirectInitTable(fout, "Redirects"); err != nil {
-		return
-	}
-
-	_, err = fout.WriteString("}\n")
-	return
+	return nil
 }

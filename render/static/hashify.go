@@ -86,13 +86,8 @@ func (r *StaticRenderer) Hashify() (err error) {
 		}
 	}
 
-	// Sort names
+	// log result, in order
 	sort.Strings(r.Names)
-
-	// and update redirects
-	for k := range r.Redirect {
-		delete(r.Redirect, k)
-	}
 
 	for _, fn0 := range r.Names {
 		v := r.Files[fn0]
@@ -102,7 +97,6 @@ func (r *StaticRenderer) Hashify() (err error) {
 			log.Printf("Hashify: %q", fn0)
 		} else {
 			log.Printf("Hashify: %q -> %q", fn0, fn1)
-			r.Redirect[fn0] = path.Base(fn1)
 		}
 	}
 

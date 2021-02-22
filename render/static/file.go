@@ -15,7 +15,7 @@ type StaticRendererFile struct {
 	Sha1sum   string
 }
 
-func (v *StaticRendererFile) Render(fout *os.File, indent string, columns uint) (err error) {
+func (v StaticRendererFile) Render(fout *os.File, indent string, columns uint) (err error) {
 	// Prologue
 	_, err = fout.WriteString("static.Content{\n")
 	if err != nil {
@@ -84,4 +84,8 @@ func (v *StaticRendererFile) Render(fout *os.File, indent string, columns uint) 
 	}
 
 	return
+}
+
+func (v StaticRendererFile) Varname() string {
+	return file.Varify(v.Name)
 }
