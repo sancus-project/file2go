@@ -27,9 +27,9 @@ func NewStaticRenderer(files []string) (*StaticRenderer, error) {
 	return r, nil
 }
 
-func (r *StaticRenderer) Render(fout *os.File) error {
+func (r *StaticRenderer) Render(fout *os.File, varname string) error {
 	r.Hashify()
-	return r.Write(fout)
+	return r.render(fout, varname)
 }
 
 // AddFile
@@ -53,24 +53,22 @@ func (r *StaticRenderer) AddFile(fname string) error {
 }
 
 // Write
-func (r *StaticRenderer) Write(fout *os.File) error {
-	if err := r.WritePrologue(fout); err != nil {
+func (r *StaticRenderer) render(fout *os.File, varname string) error {
+	if err := r.writePrologue(fout); err != nil {
 		return err
 	}
-	if err := r.WriteFiles(fout); err != nil {
+	if err := r.writeFiles(fout); err != nil {
 		return err
 	}
-	if err := r.WriteEpilogue(fout); err != nil {
+	if err := r.writeEpilogue(fout, varname); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *StaticRenderer) WritePrologue(f *os.File) error {
+func (r *StaticRenderer) writePrologue(f *os.File) error {
 	_, err := f.WriteString(`
 import (
-	"net/http"
-
 	"github.com/amery/file2go/static"
 )
 `)
@@ -78,7 +76,7 @@ import (
 	return err
 }
 
-func (r *StaticRenderer) WriteFiles(fout *os.File) error {
+func (r *StaticRenderer) writeFiles(fout *os.File) error {
 	for _, fn0 := range r.Names {
 		v := r.Files[fn0]
 
@@ -94,11 +92,11 @@ func (r *StaticRenderer) WriteFiles(fout *os.File) error {
 	return nil
 }
 
-func (r *StaticRenderer) WriteEpilogue(fout *os.File) (err error) {
+func (r *StaticRenderer) writeEpilogue(fout *os.File, varname string) (err error) {
 
-	_, err = fout.WriteString("\nvar Files = static.NewCollection(\n")
+	_, err = fmt.Fprintf(fout, "\nvar %s = static.NewCollection(\n", varname)
 	if err != nil {
-		return err
+		return
 	}
 
 	for _, fn0 := range r.Names {
@@ -108,19 +106,10 @@ func (r *StaticRenderer) WriteEpilogue(fout *os.File) (err error) {
 		_, err = fmt.Fprintf(fout, "\tstatic.NewEntry(%q, %q, &%s),\n",
 			fn0, fn1, v.Varname())
 		if err != nil {
-			return err
+			return
 		}
 	}
 
-	_, err = fout.WriteString(`)
-
-func Handler(hashify bool, next http.Handler) http.Handler {
-	return Files.Handler(hashify, next)
-}
-`)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	_, err = fmt.Fprintf(fout, ")\n")
+	return
 }

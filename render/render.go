@@ -6,28 +6,28 @@ import (
 	"strings"
 	"path/filepath"
 
+	"github.com/amery/file2go/file"
 	"github.com/amery/file2go/render/static"
 )
 
 type Renderer interface {
-	Render(fout *os.File) error
+	Render(fout *os.File, varname string) error
 	AddFile(fname string) error
 }
 
 func (c Config) Render(files []string) (err error) {
 	var s []string
-	var fname, mode, pkg string
+	var fname, varname, mode, pkg string
 	var f *os.File
 	var r Renderer
 
-	// turn config.Render into variables
-	fname = c.Output
+	// package
 	pkg = c.Package
-
 	if len(pkg) == 0 {
 		return fmt.Errorf("Package name missing")
 	}
 
+	// mode
 	switch c.Template {
 	case "static", "none", "":
 		r, err = static.NewStaticRenderer(files)
@@ -36,6 +36,27 @@ func (c Config) Render(files []string) (err error) {
 	}
 
 	// output
+	fname = c.Output
+	if fname == "-" {
+		fname = ""
+	}
+
+	// collection name
+	varname = c.Varname
+	if len(varname) > 0 {
+		// take what's given
+	} else if fname == "" {
+		// default
+		varname = "Files"
+	} else {
+		// take from filename
+		ext := filepath.Ext(fname)
+		varname = filepath.Base(fname)
+		varname = file.Varify(true, varname[:len(varname)-len(ext)])
+	}
+
+	// create output
+	fname = c.Output
 	if len(fname) > 0 && fname != "-" {
 		// temporary output, on the same directory for atomicity
 		dir, fn := filepath.Split(fname)
@@ -55,6 +76,7 @@ func (c Config) Render(files []string) (err error) {
 		f = os.Stdout
 		fname = ""
 	}
+
 
 	// go:generate
 	s = append(s, fmt.Sprintf("//go:generate %s -p %s", os.Args[0], pkg))
@@ -76,7 +98,7 @@ func (c Config) Render(files []string) (err error) {
 	}
 
 	// content
-	if err = r.Render(f); err != nil {
+	if err = r.Render(f, varname); err != nil {
 		// failed to render
 		return
 	} else if fname == "" {

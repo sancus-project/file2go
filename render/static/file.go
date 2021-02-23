@@ -87,5 +87,5 @@ func (v StaticRendererFile) Render(fout *os.File, indent string, columns uint) (
 }
 
 func (v StaticRendererFile) Varname() string {
-	return file.Varify(v.Name)
+	return file.Varify(false, v.Name)
 }

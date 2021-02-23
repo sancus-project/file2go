@@ -11,6 +11,7 @@ func main() {
 	c := render.Config{}
 	flag.StringVar(&c.Package, "p", "", "package name")
 	flag.StringVar(&c.Output, "o", "", "output file")
+	flag.StringVar(&c.Varname, "N", "", "variable name")
 	flag.StringVar(&c.Template, "T", "", "template type")
 	flag.Parse()
 

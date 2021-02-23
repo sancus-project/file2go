@@ -4,16 +4,21 @@ import (
 	"unicode"
 )
 
-func Varify(fname string) string {
+func Varify(public bool, fname string) string {
 
+	var capital, first bool
 	buf := (make([]rune, 0, len(fname)+1))
-	capital := false
-	first := true
+
+	if public {
+		capital = true
+	} else {
+		first = true
+	}
 
 	for _, c := range fname {
 
 		switch c {
-		case '.', '/', '-', ' ':
+		case '.', '/', '_', '-', ' ':
 			capital = true
 		default:
 
