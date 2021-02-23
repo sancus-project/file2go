@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"path/filepath"
 
 	"github.com/amery/file2go/render/static"
 )
@@ -34,16 +35,25 @@ func (c Config) Render(files []string) (err error) {
 		return fmt.Errorf("Invalid Template mode %q", c.Template)
 	}
 
-	// Create output
-	if len(fname) > 0 {
-		f, err = os.OpenFile(fname, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	// output
+	if len(fname) > 0 && fname != "-" {
+		// temporary output, on the same directory for atomicity
+		dir, fn := filepath.Split(fname)
+		if dir == "" {
+			dir = "./"
+		}
 
+		// dir/foo.go -> dir/.foo.go~
+		tmpname := fmt.Sprintf("%s.%s~", dir, fn)
+
+		f, err = os.OpenFile(tmpname, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 		if err != nil {
 			return
 		}
 		defer f.Close()
 	} else {
 		f = os.Stdout
+		fname = ""
 	}
 
 	// go:generate
@@ -65,5 +75,21 @@ func (c Config) Render(files []string) (err error) {
 		return
 	}
 
-	return r.Render(f)
+	// content
+	if err = r.Render(f); err != nil {
+		// failed to render
+		return
+	} else if fname == "" {
+		// fine, but no actual file
+		return
+	} else if err = f.Sync(); err != nil {
+		// failed to flush
+		return
+	} else if err = os.Rename(f.Name(), fname); err != nil {
+		// failed to rename
+		return
+	} else {
+		// done.
+		return
+	}
 }
