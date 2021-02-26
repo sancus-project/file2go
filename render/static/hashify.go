@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"path"
-	"strings"
 	"sort"
+	"strings"
 )
 
 func hashify(fname0 string, fname1 string, v *StaticRendererFile, m map[string]string) bool {

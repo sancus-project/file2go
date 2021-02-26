@@ -5,21 +5,21 @@ import (
 )
 
 type Entry struct {
-	Name string
+	Name      string
 	Hashified string
-	Content *Content
+	Content   *Content
 }
 
 func NewEntry(name, hashified string, content *Content) Entry {
 	return Entry{
-		Name: name,
+		Name:      name,
 		Hashified: hashified,
-		Content: content,
+		Content:   content,
 	}
 }
 
 type Collection struct {
-	Files map[string]*Content
+	Files     map[string]*Content
 	Hashified map[string]*Content
 	Redirects map[string]string
 }
@@ -28,7 +28,7 @@ func NewCollection(entries ...Entry) Collection {
 	l := len(entries)
 
 	c := Collection{
-		Files: make(map[string]*Content, l),
+		Files:     make(map[string]*Content, l),
 		Hashified: make(map[string]*Content, l),
 		Redirects: make(map[string]string, l),
 	}

@@ -6,8 +6,8 @@ import (
 )
 
 type StaticRenderer struct {
-	Files    map[string]*StaticRendererFile
-	Names    []string
+	Files map[string]*StaticRendererFile
+	Names []string
 }
 
 func NewStaticRenderer(files []string) (*StaticRenderer, error) {

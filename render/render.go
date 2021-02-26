@@ -3,8 +3,8 @@ package render
 import (
 	"fmt"
 	"os"
-	"strings"
 	"path/filepath"
+	"strings"
 
 	"github.com/amery/file2go/file"
 	"github.com/amery/file2go/render/static"
@@ -76,7 +76,6 @@ func (c Config) Render(files []string) (err error) {
 		f = os.Stdout
 		fname = ""
 	}
-
 
 	// go:generate
 	s = append(s, fmt.Sprintf("//go:generate %s -p %s", os.Args[0], pkg))
