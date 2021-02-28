@@ -2,6 +2,7 @@ package file
 
 import (
 	"io"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -73,4 +74,52 @@ func (o *Blob) Load(fname string, e Encoder) (err error) {
 	o.Encoding = e.Encoding()
 
 	return nil
+}
+
+func (o *Blob) RenderBytes(fout *os.File, indent string, columns uint) error {
+	var err error
+	var single bool
+
+	l := len(o.Body)
+	last := l - 1
+
+	_, err = fout.WriteString("[]byte{")
+	if err != nil {
+		return err
+	}
+
+	if uint(l) > columns {
+		single = false
+	} else {
+		single = true
+	}
+
+	for i, b := range o.Body {
+		var pre, post string
+		var col = uint(i) % columns
+
+		if col == 0 {
+			if single {
+				pre = ""
+			} else {
+				pre = "\n" + indent
+			}
+		} else {
+			pre = " "
+		}
+
+		if i == last {
+			post = ""
+		} else {
+			post = ","
+		}
+
+		_, err = fmt.Fprintf(fout, "%s0x%02x%s", pre, b, post)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = fout.WriteString("}")
+	return err
 }

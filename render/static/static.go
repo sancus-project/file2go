@@ -94,7 +94,13 @@ func (r *StaticRenderer) writeFiles(fout *os.File) error {
 
 func (r *StaticRenderer) writeEpilogue(fout *os.File, varname string) (err error) {
 
-	_, err = fmt.Fprintf(fout, "\nvar %s = static.NewCollection(\n", varname)
+	var nl string
+
+	if len(r.Names) > 0 {
+		nl = "\n"
+	}
+
+	_, err = fmt.Fprintf(fout, "\nvar %s = static.NewCollection(%s", varname, nl)
 	if err != nil {
 		return
 	}
