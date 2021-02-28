@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/amery/file2go/file"
+	"github.com/amery/file2go/render/html"
 	"github.com/amery/file2go/render/static"
 )
 
@@ -31,6 +32,9 @@ func (c Config) Render(files []string) (err error) {
 	switch c.Template {
 	case "static", "none", "":
 		r, err = static.NewStaticRenderer(files)
+	case "html":
+		mode = "html"
+		r, err = html.NewHtmlRenderer(files)
 	default:
 		return fmt.Errorf("Invalid Template mode %q", c.Template)
 	}
