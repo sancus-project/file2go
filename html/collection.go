@@ -2,13 +2,11 @@ package html
 
 import (
 	"html/template"
-	"io"
-	"log"
-	"strings"
 
 	"github.com/amery/file2go/file"
 )
 
+// Temporary wrapper
 type Template struct {
 	Name string
 	Blob *file.Blob
@@ -23,49 +21,23 @@ func NewTemplate(name string, blob *file.Blob) Template {
 }
 
 type Collection struct {
-	tmpl map[string]*template.Template
-}
-
-func NewCollection2(entries ...Template) (*Collection, error) {
-	root := template.New("")
-
-	c := &Collection{
-		tmpl: make(map[string]*template.Template, len(entries)),
-	}
-
-	for _, o := range entries {
-		buf := new(strings.Builder)
-
-		// read decoded into buffer
-		r, err := o.Blob.NewReader2("gzip")
-		if err != nil {
-			return nil, err
-		}
-
-		_, err = io.Copy(buf, r)
-		if err != nil {
-			return nil, err
-		}
-
-		// compile
-		t, err := root.New(o.Name).Parse(buf.String())
-		if err != nil {
-			return nil, err
-		}
-
-		// and store
-		c.tmpl[o.Name] = t
-	}
-
-	return c, nil
+	root  *template.Template
+	tmpl  map[string]*template.Template
+	files map[string]*file.Blob
 }
 
 func NewCollection(entries ...Template) *Collection {
 
-	c, err := NewCollection2(entries...)
-
-	if err != nil {
-		log.Panicln(err)
+	c := &Collection{
+		root: template.New(""),
+		tmpl: make(map[string]*template.Template, len(entries)),
+		files: make(map[string]*file.Blob, len(entries)),
 	}
+
+	// postpone compiling templates so we have time to add FuncMap
+	for _, o := range entries {
+		c.files[o.Name] = o.Blob
+	}
+
 	return c
 }
