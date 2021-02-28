@@ -79,12 +79,13 @@ func (c Config) Render(files []string) (err error) {
 
 	// go:generate
 	s = append(s, fmt.Sprintf("//go:generate %s -p %s", os.Args[0], pkg))
-	if len(fname) > 0 {
-		s = append(s, fmt.Sprintf("-o %s", fname))
-	}
 	if len(mode) > 0 {
 		s = append(s, fmt.Sprintf("-T %s", mode))
 	}
+	if len(fname) > 0 {
+		s = append(s, fmt.Sprintf("-o %s", fname))
+	}
+	// files...
 	s = append(s, files...)
 
 	if _, err = f.WriteString(strings.Join(s, " ")); err != nil {
