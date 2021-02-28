@@ -4,11 +4,18 @@ import (
 	"io"
 	"html/template"
 	"strings"
+
+	"github.com/amery/file2go/static"
 )
 
 // FuncMap
 func (c Collection) Funcs(funcs template.FuncMap) *template.Template {
 	return c.root.Funcs(funcs)
+}
+
+func (c Collection) BindStaticCollection(hashify bool, sc static.Collection) *template.Template {
+	funcMap := sc.NewFuncMap(hashify)
+	return c.root.Funcs(template.FuncMap(funcMap))
 }
 
 // Parse
