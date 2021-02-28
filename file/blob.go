@@ -1,6 +1,8 @@
 package file
 
 import (
+	"bytes"
+	"compress/gzip"
 	"io"
 	"fmt"
 	"net/http"
@@ -74,6 +76,30 @@ func (o *Blob) Load(fname string, e Encoder) (err error) {
 	o.Encoding = e.Encoding()
 
 	return nil
+}
+
+func (o *Blob) NewEncodedReader() io.Reader {
+	return bytes.NewReader(o.Body)
+}
+
+func (o *Blob) NewReader2(encoding string) (r io.Reader, err error) {
+	r = o.NewEncodedReader()
+
+	switch encoding {
+	case "":
+		// as-is
+	case "gzip":
+		r, err = gzip.NewReader(r)
+	default:
+		r = nil
+		err = fmt.Errorf("file2go: unknown encoding: %q", encoding)
+	}
+
+	return
+}
+
+func (o *Blob) NewReader() (r io.Reader, err error) {
+	return o.NewReader2(o.Encoding)
 }
 
 func (o *Blob) RenderBytes(fout *os.File, indent string, columns uint) error {
