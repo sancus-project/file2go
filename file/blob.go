@@ -3,8 +3,8 @@ package file
 import (
 	"bytes"
 	"compress/gzip"
-	"io"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"

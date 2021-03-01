@@ -9,7 +9,7 @@ type TemplateValidator func([]byte) error
 
 type TemplateEncoder struct {
 	gzipped bytes.Buffer
-	plain bytes.Buffer
+	plain   bytes.Buffer
 
 	z *gzip.Writer
 

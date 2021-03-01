@@ -1,8 +1,8 @@
 package html
 
 import (
-	"os"
 	"fmt"
+	"os"
 
 	"github.com/amery/file2go/file"
 )
@@ -27,7 +27,7 @@ func (f *HtmlTemplateFile) Render(fout *os.File, indent string, columns uint) er
 		return err
 	}
 
-	err = f.File.RenderBytes(fout, indent + "\t\t", columns)
+	err = f.File.RenderBytes(fout, indent+"\t\t", columns)
 	if err != nil {
 		return err
 	}

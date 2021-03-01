@@ -1,8 +1,8 @@
 package html
 
 import (
-	"io"
 	"html/template"
+	"io"
 	"strings"
 
 	"github.com/amery/file2go/static"
@@ -41,7 +41,7 @@ func (c Collection) Parse() error {
 		// compile
 		t, err := c.root.New(name).Parse(buf.String())
 		if err != nil {
-			return  err
+			return err
 		}
 
 		// and store

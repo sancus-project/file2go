@@ -29,8 +29,8 @@ type Collection struct {
 func NewCollection(entries ...Template) *Collection {
 
 	c := &Collection{
-		root: template.New(""),
-		tmpl: make(map[string]*template.Template, len(entries)),
+		root:  template.New(""),
+		tmpl:  make(map[string]*template.Template, len(entries)),
 		files: make(map[string]*file.Blob, len(entries)),
 	}
 

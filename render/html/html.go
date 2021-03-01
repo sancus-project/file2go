@@ -1,9 +1,9 @@
 package html
 
 import (
-	"os"
 	"fmt"
 	"html/template"
+	"os"
 	"path"
 	"sort"
 
@@ -51,7 +51,7 @@ func (r *HtmlRenderer) AddFile(fname string) error {
 
 	// remove extension
 	ext := path.Ext(fname)
-	key := fname[:len(fname) - len(ext)]
+	key := fname[:len(fname)-len(ext)]
 
 	o.Varname = file.Varify(false, key)
 

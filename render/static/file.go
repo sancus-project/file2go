@@ -36,7 +36,7 @@ func (v StaticRendererFile) Render(fout *os.File, indent string, columns uint) (
 		return
 	}
 
-	err = v.File.RenderBytes(fout, indent + "\t\t", columns)
+	err = v.File.RenderBytes(fout, indent+"\t\t", columns)
 	if err != nil {
 		return
 	}
