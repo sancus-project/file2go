@@ -63,3 +63,19 @@ func (c Collection) Handler(hashify bool, next http.Handler) http.Handler {
 
 	return Handler(files, redirects, next)
 }
+
+func (c Collection) Middleware(hashify bool) func(http.Handler) http.Handler {
+	var files map[string]*Content
+	var redirects map[string]string
+
+	if hashify {
+		files = c.Hashified
+		redirects = c.Redirects
+	} else {
+		files = c.Files
+	}
+
+	return func(next http.Handler) http.Handler {
+		return Handler(files, redirects, next)
+	}
+}
