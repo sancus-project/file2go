@@ -1,6 +1,7 @@
 package html
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"strings"
@@ -38,28 +39,22 @@ func (c Collection) Parse() error {
 			return err
 		}
 
-		// compile
-		t, err := c.root.New(name).Parse(buf.String())
+		// compile, and bind
+		_, err = c.root.New(name).Parse(buf.String())
 		if err != nil {
 			return err
 		}
-
-		// and store
-		c.tmpl[name] = t
 	}
 
 	return nil
 }
 
 // Access
-func (c Collection) Template(name string) *template.Template {
-	if t, ok := c.tmpl[name]; ok {
-		return t
+func (c Collection) Template(name string) (*template.Template, error) {
+	if t := c.root.Lookup(name); t != nil {
+		return t, nil
+	} else {
+		err := fmt.Errorf("html/template: %q not found")
+		return nil, err
 	}
-	return nil
-}
-
-// Execute
-func (c Collection) ExecuteTemplate(wr io.Writer, name string, data interface{}) error {
-	return c.root.ExecuteTemplate(wr, name, data)
 }

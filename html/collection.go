@@ -22,7 +22,6 @@ func NewTemplate(name string, blob *file.Blob) Template {
 
 type Collection struct {
 	root  *template.Template
-	tmpl  map[string]*template.Template
 	files map[string]*file.Blob
 }
 
@@ -30,7 +29,6 @@ func NewCollection(entries ...Template) *Collection {
 
 	c := &Collection{
 		root:  template.New(""),
-		tmpl:  make(map[string]*template.Template, len(entries)),
 		files: make(map[string]*file.Blob, len(entries)),
 	}
 
