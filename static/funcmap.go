@@ -4,14 +4,16 @@ import (
 	"fmt"
 )
 
-type FuncMap map[string]interface{}
+func (c Collection) FuncMap(hashify bool, prefix string) map[string]interface{} {
 
-func (c Collection) NewFuncMap(hashify bool) FuncMap {
+	if prefix == "" {
+		prefix = "File"
+	}
 
 	m := make(map[string]interface{}, 2)
-	m["Filename"] = c.getFilenameFunc(hashify)
-	m["Filetype"] = c.getFiletypeFunc(hashify)
-	m["Fileintegrity"] = c.getFileintegrityFunc(hashify)
+	m[prefix+"name"] = c.getFilenameFunc(hashify)
+	m[prefix+"type"] = c.getFiletypeFunc(hashify)
+	m[prefix+"integrity"] = c.getFileintegrityFunc(hashify)
 
 	return m
 }
