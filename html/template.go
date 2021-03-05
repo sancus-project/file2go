@@ -24,9 +24,6 @@ func (c Collection) Parse() error {
 
 	for name, f := range c.files {
 
-		// remove
-		delete(c.files, name)
-
 		// decode
 		buf := new(strings.Builder)
 		r, err := f.NewReader2("gzip")

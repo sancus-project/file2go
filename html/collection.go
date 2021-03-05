@@ -39,3 +39,17 @@ func NewCollection(entries ...Template) *Collection {
 
 	return c
 }
+
+func (c Collection) Clone() (c2 Collection, err error) {
+	var r2 *template.Template
+
+	if r2, err = c.root.Clone(); err == nil {
+
+		c2 = Collection{
+			root:  r2,
+			files: c.files,
+		}
+	}
+
+	return
+}
