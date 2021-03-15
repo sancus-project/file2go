@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/amery/file2go/file"
+	"go.sancus.dev/file2go/file"
 )
 
 type HtmlTemplateFile struct {

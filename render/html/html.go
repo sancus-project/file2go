@@ -7,8 +7,8 @@ import (
 	"path"
 	"sort"
 
-	"github.com/amery/file2go/file"
-	tmpl "github.com/amery/file2go/template"
+	"go.sancus.dev/file2go/file"
+	tmpl "go.sancus.dev/file2go/template"
 )
 
 // Renderer
@@ -80,12 +80,12 @@ func (r *HtmlRenderer) writePrologue(fout *os.File) error {
 	var file string
 
 	if len(r.Names) > 0 {
-		file = "\"github.com/amery/file2go/file\"\n\t"
+		file = "\"go.sancus.dev/file2go/file\"\n\t"
 	}
 
 	_, err := fmt.Fprintf(fout, `
 import (
-	%s"github.com/amery/file2go/html"
+	%s"go.sancus.dev/file2go/html"
 )
 `, file)
 	return err

@@ -3,7 +3,7 @@ package html
 import (
 	"html/template"
 
-	"github.com/amery/file2go/file"
+	"go.sancus.dev/file2go/file"
 )
 
 // Temporary wrapper

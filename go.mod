@@ -1,3 +1,3 @@
-module github.com/amery/file2go
+module go.sancus.dev/file2go
 
 go 1.15

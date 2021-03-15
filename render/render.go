@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/amery/file2go/file"
-	"github.com/amery/file2go/render/html"
-	"github.com/amery/file2go/render/static"
+	"go.sancus.dev/file2go/file"
+	"go.sancus.dev/file2go/render/html"
+	"go.sancus.dev/file2go/render/static"
 )
 
 type Renderer interface {

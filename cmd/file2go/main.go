@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/amery/file2go/render"
+	"go.sancus.dev/file2go/render"
 )
 
 func main() {

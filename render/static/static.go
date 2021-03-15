@@ -69,7 +69,7 @@ func (r *StaticRenderer) render(fout *os.File, varname string) error {
 func (r *StaticRenderer) writePrologue(f *os.File) error {
 	_, err := f.WriteString(`
 import (
-	"github.com/amery/file2go/static"
+	"go.sancus.dev/file2go/static"
 )
 `)
 
