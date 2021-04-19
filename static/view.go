@@ -15,7 +15,7 @@ func (c Collection) View(hashify bool) (v *View) {
 
 	if hashify {
 		v = &View{
-			files: c.Hashified,
+			files:     c.Hashified,
 			redirects: c.Redirects,
 		}
 	} else {
@@ -43,16 +43,16 @@ func (v View) Routes() []chi.Route {
 
 			r := chi.Route{
 				Handlers: h,
-				Pattern: k,
+				Pattern:  k,
 			}
 
 			routes = append(routes, r)
 		}
 
 		for k, loc := range v.redirects {
-			o := func(w http.ResponseWriter, r *http.Request) {
+			o := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, loc, http.StatusTemporaryRedirect)
-			}
+			})
 
 			h := make(map[string]http.Handler, 2)
 			h["GET"] = o
@@ -60,7 +60,7 @@ func (v View) Routes() []chi.Route {
 
 			r := chi.Route{
 				Handlers: h,
-				Pattern: k,
+				Pattern:  k,
 			}
 
 			routes = append(routes, r)
