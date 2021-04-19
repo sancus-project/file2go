@@ -11,13 +11,17 @@ type View struct {
 	redirects map[string]string
 }
 
-func (c Collection) View(hashify bool) (v View) {
+func (c Collection) View(hashify bool) (v *View) {
 
 	if hashify {
-		v.files = c.Hashified
-		v.redirects = c.Redirects
+		v = &View{
+			files: c.Hashified,
+			redirects: c.Redirects,
+		}
 	} else {
-		v.files = c.Files
+		v = &View{
+			files: c.Files,
+		}
 	}
 	return
 }
