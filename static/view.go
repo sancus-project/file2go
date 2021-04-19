@@ -35,22 +35,34 @@ func (v View) Routes() []chi.Route {
 	if n > 0 {
 		routes = make([]chi.Route, n)
 
-		h := make(map[string]http.Handler, 2)
-		h["GET"] = v
-		h["HEAD"] = v
+		for k, o := range v.files {
 
-		for k, _ := range v.files {
+			h := make(map[string]http.Handler, 2)
+			h["GET"] = o
+			h["HEAD"] = o
+
 			r := chi.Route{
 				Handlers: h,
 				Pattern: k,
 			}
+
 			routes = append(routes, r)
 		}
-		for k, _ := range v.redirects {
+
+		for k, loc := range v.redirects {
+			o := func(w http.ResponseWriter, r *http.Request) {
+				http.Redirect(w, r, loc, http.StatusTemporaryRedirect)
+			}
+
+			h := make(map[string]http.Handler, 2)
+			h["GET"] = o
+			h["HEAD"] = o
+
 			r := chi.Route{
 				Handlers: h,
 				Pattern: k,
 			}
+
 			routes = append(routes, r)
 		}
 	}
