@@ -92,7 +92,7 @@ func (v View) Match(rctx *chi.Context, method, path string) bool {
 // http.Handler
 func (v View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := handleFiles(w, r, v.files, v.redirects); err != nil {
-		errors.HandleError(w, r, err, nil)
+		errors.HandleError(w, r, err)
 	}
 }
 

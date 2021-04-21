@@ -48,7 +48,7 @@ func handleFiles(w http.ResponseWriter, r *http.Request, files map[string]*Conte
 func Handler(files map[string]*Content, redirects map[string]string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if err := handleFiles(w, r, files, redirects); err != nil {
-			errors.HandleError(w, r, err, next)
+			errors.HandleMiddlewareError(w, r, err, next)
 		}
 	})
 }

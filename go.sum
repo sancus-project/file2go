@@ -1,4 +1,4 @@
 github.com/go-chi/chi/v5 v5.0.2 h1:4xKeALZdMEsuI5s05PU2Bm89Uc5iM04qFubUCl5LfAQ=
 github.com/go-chi/chi/v5 v5.0.2/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
-go.sancus.dev/web v0.1.0 h1:E5L6f4BkwiUZMXKk3rSQp5IPqg60iMCWEuKC9fdu70g=
-go.sancus.dev/web v0.1.0/go.mod h1:cyTmOsurEo7XLy8abXUmobc5ViHHdxSK/rse/h9HCIg=
+go.sancus.dev/web v0.2.1 h1:5mPbnTjh4vdej980m/IZ/Dl/0pqqBxhjp4Y1unSx0U4=
+go.sancus.dev/web v0.2.1/go.mod h1:cyTmOsurEo7XLy8abXUmobc5ViHHdxSK/rse/h9HCIg=
