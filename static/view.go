@@ -95,3 +95,8 @@ func (v View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errors.HandleError(w, r, err, nil)
 	}
 }
+
+// mix.Handler
+func (v View) Handle(w http.ResponseWriter, r *http.Request) error {
+	return handleFiles(w, r, v.files, v.redirects)
+}
