@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"go.sancus.dev/file2go/errors"
+	"go.sancus.dev/web/errors"
 )
 
 func handleFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content, redirects map[string]string) error {
@@ -41,7 +41,7 @@ func handleFiles(w http.ResponseWriter, r *http.Request, files map[string]*Conte
 		// served
 		return nil
 	} else {
-		return errors.NotAllowed(r.Method, "GET", "HEAD")
+		return errors.MethodNotAllowed(r.Method, "GET", "HEAD")
 	}
 }
 

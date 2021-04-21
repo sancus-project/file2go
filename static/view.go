@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"go.sancus.dev/file2go/errors"
+	"go.sancus.dev/web/errors"
 )
 
 type View struct {
