@@ -2,15 +2,16 @@ package static
 
 import (
 	"net/http"
+
+	"go.sancus.dev/file2go/errors"
 )
 
-func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content, redirects map[string]string) bool {
+func handleFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content, redirects map[string]string) error {
 	path := r.URL.Path
 
 	// standarize path
 	if len(path) == 0 {
-		// empty path, skip
-		return false
+		return errors.ErrNotFound
 	} else if path[0] != '/' {
 		path = "/" + path
 	}
@@ -19,35 +20,26 @@ func serveFiles(w http.ResponseWriter, r *http.Request, files map[string]*Conten
 		if fn1, ok := redirects[path]; ok {
 			http.Redirect(w, r, fn1, http.StatusTemporaryRedirect)
 			// served
-			return true
+			return nil
 		}
 	}
 
 	if o, ok := files[path]; !ok {
 		// unknown file, skip
-		return false
+		return errors.ErrNotFound
 	} else if r.Method == "GET" || r.Method == "HEAD" {
 		o.ServeHTTP(w, r)
 		// served
-		return true
+		return nil
 	} else {
-
-		w.Header().Set("Allow", "OPTIONS, GET, HEAD")
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusNoContent)
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-
-		// handled
-		return true
+		return errors.NotAllowed(r.Method, "GET", "HEAD")
 	}
 }
 
 func Handler(files map[string]*Content, redirects map[string]string, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !serveFiles(w, r, files, redirects) {
-			next.ServeHTTP(w, r)
+		if err := handleFiles(w, r, files, redirects); err != nil {
+			errors.HandleError(w, r, err, next)
 		}
 	})
 }
