@@ -3,11 +3,20 @@ package static
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+
 	"go.sancus.dev/file2go/errors"
 )
 
 func handleFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content, redirects map[string]string) error {
-	path := r.URL.Path
+	var path string
+
+	rctx := chi.RouteContext(r.Context())
+	if rctx != nil {
+		path = rctx.RoutePath
+	} else {
+		path = r.URL.Path
+	}
 
 	// standarize path
 	if len(path) == 0 {
