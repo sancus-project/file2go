@@ -96,7 +96,7 @@ func (v View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// mix.Handler
-func (v View) Handle(w http.ResponseWriter, r *http.Request) error {
+// web.Handler
+func (v View) TryServeHTTP(w http.ResponseWriter, r *http.Request) error {
 	return handleFiles(w, r, v.files, v.redirects)
 }
