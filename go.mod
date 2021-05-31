@@ -4,5 +4,5 @@ go 1.15
 
 require (
 	github.com/go-chi/chi/v5 v5.0.2
-	go.sancus.dev/web v0.19.4
+	go.sancus.dev/web v0.20.0
 )
