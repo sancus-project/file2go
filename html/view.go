@@ -1,6 +1,7 @@
 package html
 
 import (
+	"bytes"
 	"html/template"
 	"net/http"
 )
@@ -12,7 +13,14 @@ type View struct {
 }
 
 func (t View) Render(w http.ResponseWriter, _ *http.Request) error {
-	return t.tmpl.Execute(w, t.data)
+	var buf bytes.Buffer
+	if err := t.tmpl.Execute(&buf, t.data); err != nil {
+		return err
+	}
+	if _, err := buf.WriteTo(w); err != nil {
+		return err
+	}
+	return nil
 }
 
 // html/template
