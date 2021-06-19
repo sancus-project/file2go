@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"html/template"
 	"net/http"
+
+	"go.sancus.dev/core/errors"
 )
 
 // github.com/go-chi/render.Renderer
@@ -15,10 +17,10 @@ type View struct {
 func (t View) Render(w http.ResponseWriter, _ *http.Request) error {
 	var buf bytes.Buffer
 	if err := t.tmpl.Execute(&buf, t.data); err != nil {
-		return err
+		return errors.WithStackTrace(1, err)
 	}
 	if _, err := buf.WriteTo(w); err != nil {
-		return err
+		return errors.WithStackTrace(1, err)
 	}
 	return nil
 }
