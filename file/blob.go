@@ -38,6 +38,8 @@ func (o *Blob) Load(fname string, e Encoder) (err error) {
 		content_type = "application/javascript; charset=utf-8"
 	} else if strings.HasSuffix(fname, ".css") {
 		content_type = "text/css; charset=utf-8"
+	} else if strings.HasSuffix(fname, ".svg") {
+		content_type = "image/svg+xml; charset=utf-8"
 	} else {
 		b := make([]byte, 512)
 
