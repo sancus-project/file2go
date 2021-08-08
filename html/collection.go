@@ -40,16 +40,32 @@ func NewCollection(entries ...Template) *Collection {
 	return c
 }
 
-func (c Collection) Clone() (c2 Collection, err error) {
+func (c *Collection) Clone() (c2 *Collection, err error) {
 	var r2 *template.Template
 
 	if r2, err = c.root.Clone(); err == nil {
 
-		c2 = Collection{
+		c2 = &Collection{
 			root:  r2,
 			files: c.files,
 		}
 	}
 
 	return
+}
+
+// Extend() adds elements from one collection that aren't present already
+func (c *Collection) Extend(b *Collection) {
+	for k, v := range b.files {
+		if _, ok := c.files[k]; !ok {
+			c.files[k] = v
+		}
+	}
+}
+
+// Add() adds elements from one collection, and replaces those using the same key
+func (c *Collection) Add(b *Collection) {
+	for k, v := range b.files {
+		c.files[k] = v
+	}
 }
