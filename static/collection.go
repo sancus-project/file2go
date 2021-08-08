@@ -24,10 +24,10 @@ type Collection struct {
 	Redirects map[string]string
 }
 
-func NewCollection(entries ...Entry) Collection {
+func NewCollection(entries ...Entry) *Collection {
 	l := len(entries)
 
-	c := Collection{
+	c := &Collection{
 		Files:     make(map[string]*Content, l),
 		Hashified: make(map[string]*Content, l),
 		Redirects: make(map[string]string, l),
@@ -50,7 +50,57 @@ func NewCollection(entries ...Entry) Collection {
 	return c
 }
 
-func (c Collection) Handler(hashify bool, next http.Handler) http.Handler {
+// Extend() adds elements from one collection that aren't present already
+func (c *Collection) Extend(b *Collection) {
+	for fn0, fn1 := range b.Redirects {
+		if o, ok := b.Files[fn0]; ok {
+
+			if _, ok := c.Redirects[fn0]; !ok {
+				// we didn't have a redirect for fn0, add it
+				c.Redirects[fn0] = fn1
+			}
+
+			if _, ok := c.Files[fn0]; !ok {
+				// we didn't have data for fn0, add it
+				c.Files[fn0] = o
+			}
+
+			if _, ok := c.Hashified[fn1]; !ok {
+				// we didn't have data for fn1, add it
+				c.Hashified[fn1] = o
+			}
+		}
+	}
+
+	for fn0, o := range b.Files {
+		if _, ok := c.Files[fn0]; !ok {
+			// we didn't have data for fn0, add it
+			c.Files[fn0] = o
+		}
+	}
+
+	for fn1, o := range b.Hashified {
+		if _, ok := c.Hashified[fn1]; !ok {
+			// we didn't have data for fn1, add it
+			c.Hashified[fn1] = o
+		}
+	}
+}
+
+// Add() adds elements from one collection, replacing those using the same key
+func (c *Collection) Add(b *Collection) {
+	for fn0, fn1 := range b.Redirects {
+		c.Redirects[fn0] = fn1
+	}
+	for fn0, o := range b.Files {
+		c.Files[fn0] = o
+	}
+	for fn1, o := range b.Hashified {
+		c.Hashified[fn1] = o
+	}
+}
+
+func (c *Collection) Handler(hashify bool, next http.Handler) http.Handler {
 	var files map[string]*Content
 	var redirects map[string]string
 
@@ -64,7 +114,7 @@ func (c Collection) Handler(hashify bool, next http.Handler) http.Handler {
 	return Handler(files, redirects, next)
 }
 
-func (c Collection) Middleware(hashify bool) func(http.Handler) http.Handler {
+func (c *Collection) Middleware(hashify bool) func(http.Handler) http.Handler {
 	var files map[string]*Content
 	var redirects map[string]string
 
