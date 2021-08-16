@@ -11,6 +11,10 @@ import (
 	"go.sancus.dev/file2go/render/static"
 )
 
+const (
+	CMD_URL = "go.sancus.dev/file2go/cmd/file2go"
+)
+
 type Renderer interface {
 	Render(fout *os.File, varname string) error
 	AddFile(fname string) error
@@ -82,7 +86,7 @@ func (c Config) Render(files []string) (err error) {
 	}
 
 	// go:generate
-	s = append(s, fmt.Sprintf("//go:generate %s -p %s", os.Args[0], pkg))
+	s = append(s, fmt.Sprintf("//go:generate go run %s -p %s", CMD_URL, pkg))
 	if len(mode) > 0 {
 		s = append(s, fmt.Sprintf("-T %s", mode))
 	}
