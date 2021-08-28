@@ -2,7 +2,7 @@ github.com/armon/go-radix v1.0.0/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgI
 github.com/felixge/httpsnoop v1.0.2/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/go-chi/chi/v5 v5.0.2 h1:4xKeALZdMEsuI5s05PU2Bm89Uc5iM04qFubUCl5LfAQ=
 github.com/go-chi/chi/v5 v5.0.2/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
-go.sancus.dev/core v0.12.0 h1:mIUFqEtYB+GbP0xaoRizYe+5vTwHSXis27cAIbWhT+A=
-go.sancus.dev/core v0.12.0/go.mod h1:Gg1aTz1Hv0s0PNtfO0WZ4qMPMDzP0/DoyccfCho73yw=
-go.sancus.dev/web v0.34.0 h1:B2+tDVXulGSzBIxe/GWRBJWP7gtPJ8ISfstQdHxyW8c=
-go.sancus.dev/web v0.34.0/go.mod h1:JiDgnyc/5NSigsHYIA8mn2Jzrh92B4ymDAvJG5k7bo8=
+go.sancus.dev/core v0.14.0 h1:htMfb5osTuwJPfliCkdOr3MeiEJtqg3NcmYIMBGshD8=
+go.sancus.dev/core v0.14.0/go.mod h1:Gg1aTz1Hv0s0PNtfO0WZ4qMPMDzP0/DoyccfCho73yw=
+go.sancus.dev/web v0.35.1 h1:4sf+8x8Yoe8l1sZSJS5zj+iVtN/qJ/G3deszKTuYZ7A=
+go.sancus.dev/web v0.35.1/go.mod h1:0PPQ9h+X7AcU5X/aJD27rSE9Mt1REU3Jte9g7IsBXxA=
