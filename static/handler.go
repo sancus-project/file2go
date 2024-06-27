@@ -11,17 +11,19 @@ import (
 func handleFiles(w http.ResponseWriter, r *http.Request, files map[string]*Content, redirects map[string]string) error {
 	var path string
 
-	rctx := chi.RouteContext(r.Context())
-	if rctx != nil {
+	if rctx := chi.RouteContext(r.Context()); rctx != nil {
 		path = rctx.RoutePath
-	} else {
+	}
+
+	if path == "" {
 		path = r.URL.Path
 	}
 
 	// standarize path
-	if len(path) == 0 {
+	switch {
+	case path == "":
 		return errors.ErrNotFound
-	} else if path[0] != '/' {
+	case path[0] != '/':
 		path = "/" + path
 	}
 
